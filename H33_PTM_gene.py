@@ -94,17 +94,15 @@ def shap_explain(model, X_train, X_test):
             ]
     )
 
-
+    #X_test_df = pd.DataFrame(X_test, columns=features)
+    X_test_df = pd.DataFrame(X_test)
     explainer = shap.TreeExplainer(model)
-    explainer.feature_names = list(features)
-    shap_values = explainer.shap_values(X_test)
+    # Calculates the SHAP values - It takes some time
+    exp = explainer(X_test_df)
+    shap_values = exp.values
+    #exp.feature_names = list(features)
 
-    shap.summary_plot(shap_values[0], X_test, feature_names=features)
-
-    # Correct beeswarm usage
-    shap_explanation = explainer(X_test)
-    shap.plots.beeswarm(shap_explanation[:, :, 0])  # index 0 = first output
-
+    shap.plots.beeswarm(exp[..., 0])
 
 
 
@@ -200,42 +198,27 @@ if __name__ == "__main__":
 
 
        #X = np.concatenate([h33_ct0.reshape(-1,1),k27ac_gb_ct0.reshape(-1,1),k27ac_gb_ct4.reshape(-1,1),k27ac_gb_ct8.reshape(-1,1),k27ac_gb_ct12.reshape(-1,1),k27ac_gb_ct16.reshape(-1,1),k27ac_gb_ct20.reshape(-1,1),k27ac_pm_ct0.reshape(-1,1),k27ac_pm_ct4.reshape(-1,1),k27ac_pm_ct8.reshape(-1,1),k27ac_pm_ct8.reshape(-1,1),k27ac_pm_ct12.reshape(-1,1),k27ac_pm_ct16.reshape(-1,1),k27ac_pm_ct20.reshape(-1,1),k4me3_gb_ct0.reshape(-1,1),k4me3_gb_ct4.reshape(-1,1),k4me3_gb_ct8.reshape(-1,1),k4me3_gb_ct12.reshape(-1,1),k4me3_gb_ct16.reshape(-1,1),k4me3_gb_ct20.reshape(-1,1),k4me3_pm_ct0.reshape(-1,1),k4me3_pm_ct4.reshape(-1,1),k4me3_pm_ct8.reshape(-1,1),k4me3_pm_ct8.reshape(-1,1),k4me3_pm_ct12.reshape(-1,1),k4me3_pm_ct16.reshape(-1,1),k4me3_pm_ct20.reshape(-1,1)],axis=1)
-       # X = np.concatenate([h33_ct0.reshape(-1, 1),h33_ct4.reshape(-1, 1),h33_ct8.reshape(-1, 1),h33_ct12.reshape(-1, 1),h33_ct16.reshape(-1, 1),h33_ct20.reshape(-1, 1),
-       #                     k27ac_gb_ct0.reshape(-1, 1), k27ac_gb_ct4.reshape(-1, 1),k27ac_gb_ct8.reshape(-1, 1), k27ac_gb_ct12.reshape(-1, 1), k27ac_gb_ct16.reshape(-1, 1),k27ac_gb_ct20.reshape(-1, 1),
-       #                     k27ac_pm_ct0.reshape(-1, 1), k27ac_pm_ct4.reshape(-1, 1),k27ac_pm_ct8.reshape(-1, 1),  k27ac_pm_ct12.reshape(-1, 1),k27ac_pm_ct16.reshape(-1, 1), k27ac_pm_ct20.reshape(-1, 1),
-       #                     k4me3_gb_ct0.reshape(-1, 1),k4me3_gb_ct4.reshape(-1, 1), k4me3_gb_ct8.reshape(-1, 1), k4me3_gb_ct12.reshape(-1, 1),k4me3_gb_ct16.reshape(-1, 1), k4me3_gb_ct20.reshape(-1, 1),
-       #                     k4me3_pm_ct0.reshape(-1, 1),k4me3_pm_ct4.reshape(-1, 1), k4me3_pm_ct8.reshape(-1, 1), k4me3_pm_ct12.reshape(-1, 1), k4me3_pm_ct16.reshape(-1, 1), k4me3_pm_ct20.reshape(-1, 1),
-       #                     k36me3_gb_ct0.reshape(-1, 1), k36me3_gb_ct4.reshape(-1, 1), k36me3_gb_ct8.reshape(-1, 1),k36me3_gb_ct12.reshape(-1, 1), k36me3_gb_ct16.reshape(-1, 1), k36me3_gb_ct20.reshape(-1, 1),
-       #                     k36me3_pm_ct0.reshape(-1, 1), k36me3_pm_ct4.reshape(-1, 1), k36me3_pm_ct8.reshape(-1, 1),k36me3_pm_ct12.reshape(-1, 1), k36me3_pm_ct16.reshape(-1, 1), k36me3_pm_ct20.reshape(-1, 1),
-       #                     k4me1_gb_ct0.reshape(-1, 1), k4me1_gb_ct4.reshape(-1, 1), k4me1_gb_ct8.reshape(-1, 1),k4me1_gb_ct12.reshape(-1, 1), k4me1_gb_ct16.reshape(-1, 1), k4me1_gb_ct20.reshape(-1, 1),
-       #                     k4me1_pm_ct0.reshape(-1, 1), k4me1_pm_ct4.reshape(-1, 1), k4me1_pm_ct8.reshape(-1, 1), k4me1_pm_ct12.reshape(-1, 1), k4me1_pm_ct16.reshape(-1, 1), k4me1_pm_ct20.reshape(-1, 1),
-       #                     k79me2_gb_ct0.reshape(-1, 1), k79me2_gb_ct4.reshape(-1, 1), k79me2_gb_ct8.reshape(-1, 1),k79me2_gb_ct12.reshape(-1, 1), k79me2_gb_ct16.reshape(-1, 1), k79me2_gb_ct20.reshape(-1, 1),
-       #                     k79me2_pm_ct0.reshape(-1, 1), k79me2_pm_ct4.reshape(-1, 1), k79me2_pm_ct8.reshape(-1, 1),k79me2_pm_ct12.reshape(-1, 1), k79me2_pm_ct16.reshape(-1, 1), k79me2_pm_ct20.reshape(-1, 1)
-       #                     ],axis=1)
+       X = np.concatenate([h33_ct0.reshape(-1, 1),h33_ct4.reshape(-1, 1),h33_ct8.reshape(-1, 1),h33_ct12.reshape(-1, 1),h33_ct16.reshape(-1, 1),h33_ct20.reshape(-1, 1),
+                           k27ac_gb_ct0.reshape(-1, 1), k27ac_gb_ct4.reshape(-1, 1),k27ac_gb_ct8.reshape(-1, 1), k27ac_gb_ct12.reshape(-1, 1), k27ac_gb_ct16.reshape(-1, 1),k27ac_gb_ct20.reshape(-1, 1),
+                           k27ac_pm_ct0.reshape(-1, 1), k27ac_pm_ct4.reshape(-1, 1),k27ac_pm_ct8.reshape(-1, 1),  k27ac_pm_ct12.reshape(-1, 1),k27ac_pm_ct16.reshape(-1, 1), k27ac_pm_ct20.reshape(-1, 1),
+                           k4me3_gb_ct0.reshape(-1, 1),k4me3_gb_ct4.reshape(-1, 1), k4me3_gb_ct8.reshape(-1, 1), k4me3_gb_ct12.reshape(-1, 1),k4me3_gb_ct16.reshape(-1, 1), k4me3_gb_ct20.reshape(-1, 1),
+                           k4me3_pm_ct0.reshape(-1, 1),k4me3_pm_ct4.reshape(-1, 1), k4me3_pm_ct8.reshape(-1, 1), k4me3_pm_ct12.reshape(-1, 1), k4me3_pm_ct16.reshape(-1, 1), k4me3_pm_ct20.reshape(-1, 1),
+                           k36me3_gb_ct0.reshape(-1, 1), k36me3_gb_ct4.reshape(-1, 1), k36me3_gb_ct8.reshape(-1, 1),k36me3_gb_ct12.reshape(-1, 1), k36me3_gb_ct16.reshape(-1, 1), k36me3_gb_ct20.reshape(-1, 1),
+                           k36me3_pm_ct0.reshape(-1, 1), k36me3_pm_ct4.reshape(-1, 1), k36me3_pm_ct8.reshape(-1, 1),k36me3_pm_ct12.reshape(-1, 1), k36me3_pm_ct16.reshape(-1, 1), k36me3_pm_ct20.reshape(-1, 1),
+                           k4me1_gb_ct0.reshape(-1, 1), k4me1_gb_ct4.reshape(-1, 1), k4me1_gb_ct8.reshape(-1, 1),k4me1_gb_ct12.reshape(-1, 1), k4me1_gb_ct16.reshape(-1, 1), k4me1_gb_ct20.reshape(-1, 1),
+                           k4me1_pm_ct0.reshape(-1, 1), k4me1_pm_ct4.reshape(-1, 1), k4me1_pm_ct8.reshape(-1, 1), k4me1_pm_ct12.reshape(-1, 1), k4me1_pm_ct16.reshape(-1, 1), k4me1_pm_ct20.reshape(-1, 1),
+                           k79me2_gb_ct0.reshape(-1, 1), k79me2_gb_ct4.reshape(-1, 1), k79me2_gb_ct8.reshape(-1, 1),k79me2_gb_ct12.reshape(-1, 1), k79me2_gb_ct16.reshape(-1, 1), k79me2_gb_ct20.reshape(-1, 1),
+                           k79me2_pm_ct0.reshape(-1, 1), k79me2_pm_ct4.reshape(-1, 1), k79me2_pm_ct8.reshape(-1, 1),k79me2_pm_ct12.reshape(-1, 1), k79me2_pm_ct16.reshape(-1, 1), k79me2_pm_ct20.reshape(-1, 1)
+                           ],axis=1)
+       #
+       # X = np.concatenate(
+       #     [
+       #      k79me2_gb_ct0.reshape(-1, 1), k79me2_gb_ct4.reshape(-1, 1), k79me2_gb_ct8.reshape(-1, 1),
+       #      k79me2_gb_ct12.reshape(-1, 1), k79me2_gb_ct16.reshape(-1, 1), k79me2_gb_ct20.reshape(-1, 1),
+       #      k79me2_pm_ct0.reshape(-1, 1), k79me2_pm_ct4.reshape(-1, 1), k79me2_pm_ct8.reshape(-1, 1),
+       #      k79me2_pm_ct12.reshape(-1, 1), k79me2_pm_ct16.reshape(-1, 1), k79me2_pm_ct20.reshape(-1, 1)
+       #      ], axis=1)
 
-       X = np.concatenate(
-           [
-            k27ac_gb_ct0.reshape(-1, 1), k27ac_gb_ct4.reshape(-1, 1), k27ac_gb_ct8.reshape(-1, 1),
-            k27ac_gb_ct12.reshape(-1, 1), k27ac_gb_ct16.reshape(-1, 1), k27ac_gb_ct20.reshape(-1, 1),
-            k27ac_pm_ct0.reshape(-1, 1), k27ac_pm_ct4.reshape(-1, 1), k27ac_pm_ct8.reshape(-1, 1),
-            k27ac_pm_ct12.reshape(-1, 1), k27ac_pm_ct16.reshape(-1, 1), k27ac_pm_ct20.reshape(-1, 1),
-            k4me3_gb_ct0.reshape(-1, 1), k4me3_gb_ct4.reshape(-1, 1), k4me3_gb_ct8.reshape(-1, 1),
-            k4me3_gb_ct12.reshape(-1, 1), k4me3_gb_ct16.reshape(-1, 1), k4me3_gb_ct20.reshape(-1, 1),
-            k4me3_pm_ct0.reshape(-1, 1), k4me3_pm_ct4.reshape(-1, 1), k4me3_pm_ct8.reshape(-1, 1),
-            k4me3_pm_ct12.reshape(-1, 1), k4me3_pm_ct16.reshape(-1, 1), k4me3_pm_ct20.reshape(-1, 1),
-            k36me3_gb_ct0.reshape(-1, 1), k36me3_gb_ct4.reshape(-1, 1), k36me3_gb_ct8.reshape(-1, 1),
-            k36me3_gb_ct12.reshape(-1, 1), k36me3_gb_ct16.reshape(-1, 1), k36me3_gb_ct20.reshape(-1, 1),
-            k36me3_pm_ct0.reshape(-1, 1), k36me3_pm_ct4.reshape(-1, 1), k36me3_pm_ct8.reshape(-1, 1),
-            k36me3_pm_ct12.reshape(-1, 1), k36me3_pm_ct16.reshape(-1, 1), k36me3_pm_ct20.reshape(-1, 1),
-            k4me1_gb_ct0.reshape(-1, 1), k4me1_gb_ct4.reshape(-1, 1), k4me1_gb_ct8.reshape(-1, 1),
-            k4me1_gb_ct12.reshape(-1, 1), k4me1_gb_ct16.reshape(-1, 1), k4me1_gb_ct20.reshape(-1, 1),
-            k4me1_pm_ct0.reshape(-1, 1), k4me1_pm_ct4.reshape(-1, 1), k4me1_pm_ct8.reshape(-1, 1),
-            k4me1_pm_ct12.reshape(-1, 1), k4me1_pm_ct16.reshape(-1, 1), k4me1_pm_ct20.reshape(-1, 1),
-            k79me2_gb_ct0.reshape(-1, 1), k79me2_gb_ct4.reshape(-1, 1), k79me2_gb_ct8.reshape(-1, 1),
-            k79me2_gb_ct12.reshape(-1, 1), k79me2_gb_ct16.reshape(-1, 1), k79me2_gb_ct20.reshape(-1, 1),
-            k79me2_pm_ct0.reshape(-1, 1), k79me2_pm_ct4.reshape(-1, 1), k79me2_pm_ct8.reshape(-1, 1),
-            k79me2_pm_ct12.reshape(-1, 1), k79me2_pm_ct16.reshape(-1, 1), k79me2_pm_ct20.reshape(-1, 1)
-            ], axis=1)
        y=np.concatenate([y_ct0.reshape(-1,1),y_ct4.reshape(-1,1),y_ct8.reshape(-1,1),y_ct12.reshape(-1,1),y_ct16.reshape(-1,1),y_ct20.reshape(-1,1)],axis=1)
 
        print(X.shape)
@@ -266,23 +249,16 @@ if __name__ == "__main__":
        y_pred = model.predict(X_test_norm)
        r2 = r2_score(y_test, y_pred)
 
-       y_df = pd.DataFrame({
-           "rna-seq_true": y_test.ravel(),
-           "rna-seq_pred": y_pred.ravel()
-       })
-       y_df.to_csv("rna-seq_predicted_y.csv")
+       rna_seq_df = pd.DataFrame({"rna-seq-predicted":y_pred.ravel(),"rna-seq-true":y_test.ravel()})
+       rna_seq_df.to_csv("RNA-seq-predicted.csv",index=False)
 
-       kf = KFold(n_splits=5, shuffle=True, random_state=42)
-
-       scores = cross_val_score(model, X, y, cv=kf, scoring='r2')
-
-       print(scores)
-       print("Mean R2 across 5 folds ", scores.mean())
-       print("Std of R2 across 5 folds ", scores.std())
+       #kf = KFold(n_splits=5, shuffle=True)
+       #scores = cross_val_score(model, X, y, cv=kf, scoring='r2')
+       #print('Mean R2 across 5 folds: ',scores.mean())
+       #print('Std R2 across 5 folds: ', scores.std())
 
        # rmse = np.sqrt(mean_squared_error(y_test_log, y_pred))
        # #scores = cross_val_score(model, X, y, scoring="r2", cv=5)
        #
-       #print(r2)
+       print(r2)
        #shap_explain(model, X_train_norm, X_test_norm)
-
