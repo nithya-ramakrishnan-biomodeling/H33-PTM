@@ -262,7 +262,7 @@ if __name__ == "__main__":
        # #model=TweedieRegressor(power=1, link='log',max_iter=1000,alpha=0.5)
 
 
-       model.fit(X_train_norm, y_train)
+       model.fit(X_train_norm, y_train_norm)
        y_pred = model.predict(X_test_norm)
        r2 = r2_score(y_test, y_pred)
 
